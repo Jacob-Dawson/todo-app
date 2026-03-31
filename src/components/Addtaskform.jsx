@@ -14,6 +14,8 @@ export default function AddTaskForm({ parentId, depth = 0}){
         e.preventDefault()
         if(!value.trim()) return
 
+        console.log('test',{parentId, title: value.trim()})
+
         dispatch({
             type:'ADD_TASK',
             parentId,

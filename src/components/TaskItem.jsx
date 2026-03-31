@@ -34,7 +34,7 @@ export default function TaskItem({task, depth}){
 
     }
 
-    const hasChildren = task.hasChildren && task.hasChildren.length > 0
+    const hasChildren = task.children && task.children.length > 0
 
     return (
         <div data-depth={depth}>
@@ -49,10 +49,15 @@ export default function TaskItem({task, depth}){
                 type = "checkbox"
                 checked = {task.completed}
                 onChange = {handleToggleComplete}
+                style={{width:'18px', height:'18px', cursor:'pointer'}}
                 aria-label={'Mark "${task.title}" complete'}
             />
             
-            <span style={{ textDecoration: task.completed ? 'line-through' : 'none'}}>
+            <span style={{ 
+                textDecoration: task.completed ? 'line-through' : 'none',
+                opacity: task.completed ? 0.5 : 1,
+                marginLeft: '8px'
+            }}>
                 {task.title}
             </span>
 

@@ -1,7 +1,8 @@
+import { useTaskContext } from './context/TaskContext'
 import TaskContext from './context/TaskContext'
-import useTaskReducer from './hooks/useTaskReducer'
 import TaskList from './components/Tasklist'
 import AddTaskForm from './components/Addtaskform'
+import useTaskReducer from './hooks/useTaskReducer.js'
 
 export default function App(){
 
@@ -12,7 +13,7 @@ export default function App(){
             <main>
                 <h1>Tasks</h1>
                 <AddTaskForm parentId={null} />
-                <TaskList task={tasks} depth={0}/>
+                <TaskList tasks={tasks} depth={0}/>
             </main>
         </TaskContext.Provider>
     )
