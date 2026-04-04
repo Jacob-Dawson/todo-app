@@ -39,6 +39,7 @@ export function findTaskDepth(tasks, id, depth = 0){
 
 export function filterActiveTree(tasks){
 
+    if(!tasks) return []
     return tasks
         .filter(task => !task.completed)
         .map(task => ({
@@ -48,6 +49,8 @@ export function filterActiveTree(tasks){
 }
 
 export function filterCheckedTree(tasks){
+
+    if(!tasks) return []
 
     const result = []
 

@@ -14,7 +14,7 @@ export default function Task({task, depth, readonly = false}){
             {/* Children shown if not collapsed */}
             {!task.collapsed && (
                 <>
-                    <TaskList tasks={task.children} depth={depth + 1} parentId={task.id} readonly={readonly}/>
+                    <TaskList tasks={task.children ?? []} depth={depth + 1} parentId={task.id} readonly={readonly}/>
 
                     {/* Only allow adding subtasks if we have not hit the tier limit */}
 

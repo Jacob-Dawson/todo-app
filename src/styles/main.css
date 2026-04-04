@@ -1,0 +1,613 @@
+/* Instrument Serif */
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* DM Sans */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Instrument+Serif:ital@0;1&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Variables */
+
+:root{
+
+    font-size: 16px;
+    --bg: #F7F5F2;
+    --surface: #FFFFFF;
+    --surface-alt: #F0EDE9;
+    --accent: #C1440E;
+    --accent-hover: #A33A0C;
+    --text-primary: #1A1714;
+    --text-secondary: #6B6560;
+    --text-muted: #A09890;
+    --border: #E5E0D8;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --radius: 10px;
+    --indent: 28px;
+    --transition: 150ms ease;
+
+}
+
+[data-theme="dark"]{
+
+    --bg: #1A1714;
+    --surface: #242018;
+    --surface-alt: #2C2820;
+    --accent: #E8601A;
+    --accent-hover: #D45516;
+    --text-primary: #F0EDE9;
+    --text-secondary: #A09890;
+    --text-muted: #6B6560;
+    --border: #3A3530;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.2);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+
+}
+
+/* Reset - base styles */
+*, *::before, *::after{
+
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+
+}
+
+ul {
+
+    list-style: none;
+
+}
+
+/* Base */
+body{
+
+    font-family: "DM Sans", sans-serif;
+    font-weight: 400;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 48px 24px 96px;
+    -webkit-font-smoothing: antialiased;
+
+}
+
+/* Layout */
+main{
+
+    max-width: 680px;
+    margin: 0 auto;
+
+}
+
+/* Headings */
+h1{
+
+    font-family: "Instrument Serif", serif;
+    font-size: 2.8rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    line-height: 1;
+    cursor: pointer;
+
+}
+
+h1:hover{
+
+    opacity: 0.7;
+
+}
+
+h2{
+
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin: 48px 0 12px;
+
+}
+
+.title-edit-input{
+
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.8rem;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--accent);
+    outline: none;
+    width: 100%;
+    margin-bottom: 32px;
+    line-height: 1;
+    padding: 0;
+
+}
+
+/* Add task form */
+form{
+
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+
+}
+
+form input[type="text"]{
+
+    flex: 1;
+    height: 40px;
+    padding: 0 14px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface);
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+
+}
+
+form input[type="text"]::placeholder{
+
+    color: var(--text-muted);
+
+}
+
+form input[type="text"]:focus{
+
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(193, 68, 14, 0.1);
+
+}
+
+form button[type="submit"]{
+
+    height: 40px;
+    padding: 0 16px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition), transform var(--transition);
+    white-space: nowrap;
+
+}
+
+form button[type="submit"]:hover{
+
+    background: var(--accent-hover);
+
+}
+
+form button[type="submit"]:active{
+
+    transform: scale(0.97);
+
+}
+
+/* Task list */
+ul{
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+}
+
+li{
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+}
+
+/* Indentation per tier */
+li li{
+
+    padding-left: var(--indent);
+
+}
+
+/* Task Item Row */
+[data-depth]{
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow var(--transition), border-color var(--transition);
+    min-height: 46px;
+
+}
+
+[data-depth]:hover{
+
+    border-color: #D4CEC6;
+    box-shadow: var(--shadow-md);
+
+}
+
+/* Drag Handle */
+.drag-handle{
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+    background: none !important;
+    border: none;
+    cursor: grab !important;
+    font-size: 1rem;
+    padding: 0;
+    opacity: 0;
+    transition: opacity var(--transition), color var(--transition);
+    flex-shrink: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    outline: none;
+    border-radius: 0;
+
+}
+
+[data-depth]:hover .drag-handle{
+
+    opacity: 1;
+
+}
+
+.drag-handle:hover{
+
+    color: var(--text-secondary);
+    background: none;
+
+}
+
+.drag-handle:active{
+
+    cursor: grabbing !important;
+
+}
+
+/* Collapse Toggle */
+[data-depth] button[aria-label="Toggle subtasks"]{
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background var(--transition), color var(--transition);
+    flex-shrink: 0;
+    padding: 0;
+
+}
+
+[data-depth] button[aria-label="Toggle subtasks"]:hover{
+ 
+    background: var(--surface-alt);
+    color: var(--text-primary);
+
+}
+
+/* Checkbox */
+[data-depth] input[type="checkbox"]{
+
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--border);
+    border-radius: 5px;
+    background: var(--surface);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background var(--transition), border-color var(--transition);
+    position: relative;
+
+}
+
+[data-depth] input[type="checkbox"]:hover{
+
+    border-color: var(--accent);
+
+}
+
+[data-depth] input[type="checkbox"]:checked{
+
+    background: var(--accent);
+    border-color: var(--accent);
+
+}
+
+[data-depth] input[type="checkbox"]:checked::after{
+
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1.5px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid white;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+
+}
+
+/* Task Title */
+[data-depth] span{
+
+    flex: 1;
+    font-size: 0.92rem;
+    line-height: 1.4;
+    color: var(--text-primary);
+    transition: color var(--transition);
+
+}
+
+[data-depth] span[style*="line-through"]{
+
+    color: var(--text-muted) !important;
+    opacity: 1 !important;
+
+}
+
+/* Edit + Delete Buttons */
+[data-depth] button[aria-label="Edit task"],
+[data-depth] button[aria-label="Delete task"]{
+
+    height: 28px;
+    padding: 0 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: none;
+    font-family: "DM Sans", sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    opacity: 0;
+    flex-shrink: 0;
+
+}
+
+[data-depth]:hover button[aria-label="Edit task"],
+[data-depth]:hover button[aria-label="Delete task"]{
+
+    opacity: 1;
+
+}
+
+[data-depth] button[aria-label="Edit task"]{
+
+    color: var(--text-secondary);
+
+}
+
+[data-depth] button[aria-label="Edit task"]:hover{
+
+    background: var(--surface-alt);
+    border-color: #C8C0B8;
+    color: var(--text-primary);
+
+}
+
+[data-depth] button[aria-label="Delete task"]{
+
+    color: var(--text-muted);
+
+}
+
+[data-depth] button[aria-label="Delete task"]:hover{
+
+    background: #FEF2EE;
+    border-color: #F5C484;
+    color: var(--accent);
+
+}
+
+/* Checked Section Muting */
+h2 + ul [data-depth]{
+
+    background: var(--surface-alt);
+    border-color: transparent;
+    box-shadow: none;
+
+}
+
+h2 + ul [data-depth] span{
+
+    color: var(--text-muted);
+
+}
+
+/* Dragging State */
+[data-depth][style*="opacity 0.4"]{
+
+    border-style: dashed;
+
+}
+
+/* Add task forms inside task items */
+li li form,
+li form{
+
+    margin-top: 2px;
+    margin-bottom: 0;
+
+}
+
+li li form input[type="text"],
+li form input[type="text"]{
+
+    height: 36px;
+    font-size: 0.85rem;
+    background: var(--bg);
+    border-color: transparent;
+
+}
+
+li li form input[type="text"]:focus,
+li form input[type="text"]:focus {
+
+    background: var(--surface);
+    border-color: var(--accent);
+
+}
+
+li li form button[type="submit"],
+li form button[type="submit"]{
+
+    height: 36px;
+    font-size: 0.8rem;
+    padding: 0 12px;
+    background: var(--surface-alt);
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+
+}
+
+li li form button[type="submit"]:hover,
+li form button[type="submit"]:hover {
+
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+
+}
+
+/* Inline edit input */
+.inline-edit-input{
+
+    flex: 1;
+    height: 28px;
+    padding: 0 10px;
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    background: var(--surface);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.92rem;
+    color: var(--text-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(193, 68, 14, 0.1);
+
+}
+
+/* Save + Cancel buttons */
+[data-depth] button[aria-label="Save edit"]{
+
+    height: 28px;
+    padding: 0 10px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background var(--transition);
+    flex-shrink: 0;
+
+}
+
+[data-depth] button[aria-label="Save edit"]:hover{
+
+    background: var(--accent-hover);
+
+}
+
+[data-depth] button[aria-label="Cancel edit"]{
+
+    height: 28px;
+    padding: 0 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    background: none;
+    color: var(--text-secondary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+    flex-shrink: 0;
+
+}
+
+[data-depth] button[aria-label="Cancel edit"]:hover{
+
+    background: var(--surface-alt);
+    color: var(--text-primary);
+
+}
+
+[data-depth] button[aria-label="Drag to reorder"]{
+
+    -webkit-appearance: none;
+    appearance: none;
+    outline: none;
+    box-shadow: none;
+
+}
+
+form input[type="text"]:hover{
+
+    border-color: #C8C0B8;
+    background: var(--surface);
+
+}
+
+/* Dark mode toggle */
+.theme-toggle{
+
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-sm);
+    z-index: 100;
+
+}
+
+.theme-toggle:hover{
+
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: var(--shadow-md);
+
+}

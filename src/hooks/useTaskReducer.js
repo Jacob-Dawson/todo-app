@@ -78,6 +78,7 @@ function taskReducer(state, action){
         // actions for task such as add, edit, delete, toggle, etc
 
         case 'ADD_TASK':{
+            if(!action.title?.trim()) return state
             const newTask = createTask(action.title)
             if(action.parentId === null){
                 return [...state, newTask]
@@ -133,11 +134,14 @@ function taskReducer(state, action){
 
 export default function useTaskReducer(){
 
-    const [tasks, dispatch] = useReducer(taskReducer, initialState, (init) => {
+    const [tasks, dispatch] = useReducer(taskReducer, [], (init) => {
         // Load from localStorage on first render
-
-        const saved = localStorage.getItem('tasks')
-        return saved ? JSON.parse(saved) : init
+        try{
+            const saved = localStorage.getItem('tasks')
+            return saved ? JSON.parse(saved) : init
+        } catch {
+            return init;
+        }
     })
 
     // Sync to localStorage on every state change
