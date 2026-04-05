@@ -1,8 +1,6 @@
 import { useReducer, useEffect } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
-import { TraversalOrder } from "@dnd-kit/core"
 import { findParentId, findTaskById } from "../utils/taskUtils"
-import { preconnect } from "react-dom"
 
 // placeholder
 
@@ -145,6 +143,18 @@ function historyReducer(state, action){
             past: state.past.slice(0,-1),
             present: previous,
             future: [state.present, ...state.future]
+        }
+
+    }
+
+    if(action.type === 'REDO'){
+
+        if(state.future.length === 0) return state
+        const next = state.future[0]
+        return {
+            past: [...state.past, state.present],
+            present: next,
+            future: state.future.slice(1)
         }
 
     }

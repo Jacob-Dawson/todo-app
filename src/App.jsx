@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
+import { DndContext, closestCenter, PointerSensor, useSensor, useSensors, DragOverlay } from '@dnd-kit/core'
 import { useTaskContext } from './context/TaskContext'
 import TaskContext from './context/TaskContext'
 import TaskList from './components/Tasklist'
@@ -26,6 +26,7 @@ export default function App(){
     const [titleValue, setTitleValue] = useState(appTitle)
     const sensors = useSensors(useSensor(PointerSensor))
     const dragDeltaX = useRef(0)
+    const [activeTask, setActiveTask] = useState(null)
     const activeTasks = filterActiveTree(tasks)
     const checkedTasks = filterCheckedTree(tasks)
 
@@ -55,6 +56,13 @@ export default function App(){
 
     }, [])
 
+    function handleDragStart(event){
+
+        const {active} = event
+        setActiveTask(findTaskById(tasks, active.id))
+
+    }
+
     function handleDragMove(event){
 
         dragDeltaX.current = event.delta.x
@@ -66,6 +74,8 @@ export default function App(){
         const { active, over } = event
         const deltaX = dragDeltaX.current
         const activeParentId = findParentId(tasks, active.id)
+
+        setActiveTask(null)
 
         // Handle drag right - demote (must happen before early return)
 
@@ -171,6 +181,7 @@ export default function App(){
                 collisionDetection={closestCenter}
                 onDragMove={handleDragMove}
                 onDragEnd={handleDragEnd}
+                onDragStart={handleDragStart}
             >
                 <main>
                     <div className='header-row'>
@@ -244,6 +255,13 @@ export default function App(){
                         </button>
                     </div>
                 </main>
+                <DragOverlay>
+                    {activeTask ? (
+                        <div className='drag-overlay'>
+                            {activeTask.title}
+                        </div>
+                    ) : null}
+                </DragOverlay>
             </DndContext>
         </TaskContext.Provider>
     )
