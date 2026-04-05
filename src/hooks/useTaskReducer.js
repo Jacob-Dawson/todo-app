@@ -178,23 +178,18 @@ function historyReducer(state, action){
 
 // Custom hook
 
-export default function useTaskReducer(){
+export default function useTaskReducer(initialTasks, onTasksChange){
 
     const [state, dispatch] = useReducer(historyReducer, null, () => {
         // Load from localStorage on first render
-        try{
-            const saved = localStorage.getItem('tasks')
-            const present = saved ? JSON.parse(saved) : []
-            return { past: [], present, future: []}
-        } catch {
-            return { past: [], present: [], future: []};
-        }
+        return { past: [], present: initialTasks ?? [], future: []};
+
     })
 
     // Sync to localStorage on every state change
     useEffect(() => {
 
-        localStorage.setItem('tasks', JSON.stringify(state.present))
+        onTasksChange?.(state.present)
 
     }, [state.present])
 
