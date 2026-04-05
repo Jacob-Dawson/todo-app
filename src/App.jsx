@@ -1,5 +1,4 @@
-import { useEffect, useRef } from 'react'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { DndContext, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { useTaskContext } from './context/TaskContext'
 import TaskContext from './context/TaskContext'
@@ -10,13 +9,14 @@ import { findParentId, findTaskById, findTaskDepth, filterActiveTree, filterChec
 
 export default function App(){
 
-    const { tasks, dispatch } = useTaskReducer()
+    const { tasks, dispatch, canUndo, canRedo } = useTaskReducer()
     const [editingId, setEditingId] = useState(null)
     const [darkMode, setDarkMode] = useState(() => {
 
         return localStorage.getItem('theme') === 'dark'
     
     })
+    const addTaskRef = useRef(null)
     const [appTitle, setAppTitle] = useState(() => {
 
         return localStorage.getItem('appTitle') || 'Tasks'
@@ -36,6 +36,25 @@ export default function App(){
 
     }, [darkMode])
 
+    useEffect(() => {
+
+        function handleKeyDown(e){
+
+            const tag = document.activeElement.tagName.toLowerCase()
+            if(e.key === 'n' && tag !== 'input' && tag !== 'textarea'){
+
+                e.preventDefault()
+                addTaskRef.current?.focus()
+
+            }
+
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        return () => window.removeEventListener('keydown', handleKeyDown)
+
+    }, [])
+
     function handleDragMove(event){
 
         dragDeltaX.current = event.delta.x
@@ -49,8 +68,6 @@ export default function App(){
         const activeParentId = findParentId(tasks, active.id)
 
         // Handle drag right - demote (must happen before early return)
-        console.log('deltaX', deltaX);
-        console.log('activeParentId', activeParentId);
 
 
         // Drag right - make it a child of the task above it
@@ -134,6 +151,19 @@ export default function App(){
 
     const completedCount = countCompleted(tasks)
 
+    function countRemaining(tasks){
+
+        return tasks.reduce((acc, task) => {
+
+            const self = !task.completed ? 1 : 0
+            return acc + self + countRemaining(task.children)
+
+        }, 0)
+
+    }
+
+    const remainingCount = countRemaining(tasks)
+
     return (
         <TaskContext.Provider value={{ tasks, dispatch, editingId, setEditingId}}>
             <DndContext
@@ -143,36 +173,51 @@ export default function App(){
                 onDragEnd={handleDragEnd}
             >
                 <main>
-                    {editingTitle ? (
-                        <input
-                            className="title-edit-input"
-                            value={titleValue}
-                            onChange={e => setTitleValue(e.target.value)}
-                            onBlur={() => {
-                                const trimmed = titleValue.trim() || 'Tasks'
-                                setAppTitle(trimmed)
-                                localStorage.setItem('appTitle', trimmed)
-                                setEditingTitle(false)
-                            }}
-                            onKeyDown={e => {
-                                if(e.key === 'Enter') e.target.blur()
-                                if(e.key === 'Escape'){
-                                    setTitleValue(appTitle)
+                    <div className='header-row'>
+                        {editingTitle ? (
+                            <input
+                                className="title-edit-input"
+                                value={titleValue}
+                                onChange={e => setTitleValue(e.target.value)}
+                                onBlur={() => {
+                                    const trimmed = titleValue.trim() || 'Tasks'
+                                    setAppTitle(trimmed)
+                                    localStorage.setItem('appTitle', trimmed)
                                     setEditingTitle(false)
-                                }
+                                }}
+                                onKeyDown={e => {
+                                    if(e.key === 'Enter') e.target.blur()
+                                    if(e.key === 'Escape'){
+                                        setTitleValue(appTitle)
+                                        setEditingTitle(false)
+                                    }
+                                }}
+                                autoFocus
+                            />
+                        ) : (
+                            <h1 onClick={() => {
+                                setTitleValue(appTitle)
+                                setEditingTitle(true)
                             }}
-                            autoFocus
-                        />
-                    ) : (
-                        <h1 onClick={() => {
-                            setTitleValue(appTitle)
-                            setEditingTitle(true)
-                        }}
-                        title="Click to edit">
-                            {appTitle}
-                        </h1>
+                            title="Click to edit">
+                                {appTitle}
+                            </h1>
+                        )}
+                        
+                        <button
+                            className='theme-toggle'
+                            onClick={() => setDarkMode(d => !d)}
+                            aria-label="Toggle dark mode"
+                        >
+                            {darkMode ? '☀️' : '🌙'}
+                        </button>
+                    </div>
+                    {remainingCount > 0 && (
+                        <p className='task-count'>
+                            {remainingCount} {remainingCount === 1 ? 'task' : 'tasks'} remaining
+                        </p>
                     )}
-                    <AddTaskForm parentId={null} />
+                    <AddTaskForm parentId={null} ref={addTaskRef}/>
                     <TaskList tasks={activeTasks} depth={0} parentId={null}/>
                     {checkedTasks.length > 0 && (
                         <>
@@ -180,13 +225,24 @@ export default function App(){
                             <TaskList tasks={checkedTasks} depth={0} parentId={null} readonly />
                         </>
                     )}
-                    <button
-                        className='theme-toggle'
-                        onClick={() => setDarkMode(d => !d)}
-                        aria-label="Toggle dark mode"
-                    >
-                        {darkMode ? '☀️' : '🌙'}
-                    </button>
+                    <div className='history-bar'>
+                        <button
+                            className='history-btn'
+                            onClick={() => dispatch({type: "UNDO"})}
+                            disabled={!canUndo}
+                            aria-label='Undo'
+                        >
+                            ↩ Undo
+                        </button>
+                        <button
+                            className='history-btn'
+                            onClick={() => dispatch({type:"REDO"})}
+                            disabled={!canRedo}
+                            aria-label='Redo'
+                        >
+                            Redo ↪
+                        </button>
+                    </div>
                 </main>
             </DndContext>
         </TaskContext.Provider>

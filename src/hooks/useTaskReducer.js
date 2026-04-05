@@ -2,6 +2,7 @@ import { useReducer, useEffect } from "react"
 import { arrayMove } from "@dnd-kit/sortable"
 import { TraversalOrder } from "@dnd-kit/core"
 import { findParentId, findTaskById } from "../utils/taskUtils"
+import { preconnect } from "react-dom"
 
 // placeholder
 
@@ -72,60 +73,95 @@ function syncParentCompletion(tasks){
 }
 
 // Reducer (actions to be filled in next)
-function taskReducer(state, action){
+function taskReducer(tasks, action){
 
     switch(action.type){
         // actions for task such as add, edit, delete, toggle, etc
 
         case 'ADD_TASK':{
-            if(!action.title?.trim()) return state
+            if(!action.title?.trim()) return tasks
             const newTask = createTask(action.title)
             if(action.parentId === null){
-                return [...state, newTask]
+                return [...tasks, newTask]
             }
-            return addTaskToParent(state, action.parentId, newTask)
+            return addTaskToParent(tasks, action.parentId, newTask)
         }
 
         case 'EDIT_TASK':{
-            return updateTask(state, action.id, task => ({
+            return updateTask(tasks, action.id, task => ({
                 ...task, 
                 title: action.title
             }))
         }
 
         case 'DELETE_TASK':{
-            return deleteTask(state, action.id)
+            return deleteTask(tasks, action.id)
         }
 
         case 'TOGGLE_COMPLETE':{
-            const updated = updateTask(state, action.id, task => (
+            const updated = updateTask(tasks, action.id, task => (
                 setCompletedRecursive(task, !task.completed)
             ))
             return syncParentCompletion(updated)
         }
 
         case 'TOGGLE_COLLAPSE':{
-            return updateTask(state, action.id, task => ({ ...task, collapsed: !task.collapsed}))
+            return updateTask(tasks, action.id, task => ({ ...task, collapsed: !task.collapsed}))
         }
 
         case 'REORDER_TASKS':{
-            return reorderTasks(state, action.parentId, action.activeId, action.overId)
+            return reorderTasks(tasks, action.parentId, action.activeId, action.overId)
         }
 
         case 'REPARENT_TASK':{
             // Find and extract the task being moved
-            const taskToMove = findTaskById(state, action.activeId)
-            if(!taskToMove) return state
+            const taskToMove = findTaskById(tasks, action.activeId)
+            if(!taskToMove) return tasks
 
             // Remove it from its current position
-            const withoutTask = deleteTask(state, action.activeId)
+            const withoutTask = deleteTask(tasks, action.activeId)
 
             // Insert it under the new parent
             return insertTask(withoutTask, action.newParentId, taskToMove, action.overId, action.insertAfter ?? false)
         }
 
         default:
-            return state
+            return tasks
+    }
+
+}
+
+// Actions that should not be undoable
+const NO_HISTORY = new Set(['TOGGLE_COLLAPSE'])
+
+// History reducer wrapper
+function historyReducer(state, action){
+
+    if(action.type === 'UNDO'){
+
+        if(state.past.length === 0) return state
+        const previous = state.past[state.past.length - 1]
+        return {
+            past: state.past.slice(0,-1),
+            present: previous,
+            future: [state.present, ...state.future]
+        }
+
+    }
+
+    const newPresent = taskReducer(state.present, action)
+    if(newPresent === state.present) return state
+
+    if(NO_HISTORY.has(action.type)){
+
+        return {...state, present: newPresent}
+
+    }
+
+    return {
+        past: [...state.past, state.present],
+        present: newPresent,
+        future: []
     }
 
 }
@@ -134,24 +170,30 @@ function taskReducer(state, action){
 
 export default function useTaskReducer(){
 
-    const [tasks, dispatch] = useReducer(taskReducer, [], (init) => {
+    const [state, dispatch] = useReducer(historyReducer, null, () => {
         // Load from localStorage on first render
         try{
             const saved = localStorage.getItem('tasks')
-            return saved ? JSON.parse(saved) : init
+            const present = saved ? JSON.parse(saved) : []
+            return { past: [], present, future: []}
         } catch {
-            return init;
+            return { past: [], present: [], future: []};
         }
     })
 
     // Sync to localStorage on every state change
     useEffect(() => {
 
-        localStorage.setItem('tasks', JSON.stringify(tasks))
+        localStorage.setItem('tasks', JSON.stringify(state.present))
 
-    }, [tasks])
+    }, [state.present])
 
-    return { tasks, dispatch}
+    return { 
+        tasks: state.present,
+        dispatch,
+        canUndo: state.past.length > 0,
+        canRedo: state.future.length > 0
+    }
 
 }
 

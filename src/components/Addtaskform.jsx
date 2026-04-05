@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, forwardRef } from "react";
 import { useTaskContext } from '../context/TaskContext'
 
-export default function AddTaskForm({ parentId, depth = 0}){
+const AddTaskForm = forwardRef(function AddTaskForm({ parentId, depth = 0}, ref){
 
     const { dispatch } = useTaskContext()
     const [value, setValue] = useState('')
@@ -13,8 +13,6 @@ export default function AddTaskForm({ parentId, depth = 0}){
 
         e.preventDefault()
         if(!value.trim()) return
-
-        console.log('test',{parentId, title: value.trim()})
 
         dispatch({
             type:'ADD_TASK',
@@ -29,6 +27,7 @@ export default function AddTaskForm({ parentId, depth = 0}){
     return (
         <form onSubmit={handleSubmit}>
             <input
+                ref={ref}
                 type="text"
                 value={value}
                 onChange={e => setValue(e.target.value)}
@@ -39,4 +38,6 @@ export default function AddTaskForm({ parentId, depth = 0}){
         </form>
     )
 
-}
+})
+
+export default AddTaskForm

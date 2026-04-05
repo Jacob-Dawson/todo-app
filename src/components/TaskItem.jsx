@@ -9,8 +9,16 @@ export default function TaskItem({task, depth, readonly = false}){
     const isEditing = editingId === task.id
     const [editValue, setEditValue] = useState(task.title)
     const inputRef = useRef(null)
+    const rowRef = useRef(null)
 
     const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({id: task.id})
+
+    const combinedRef = (node) => {
+
+        setNodeRef(node)
+        rowRef.current = node
+
+    }
 
     const style = {
         transform: CSS.Transform.toString(transform),
@@ -45,7 +53,16 @@ export default function TaskItem({task, depth, readonly = false}){
 
     function handleDelete(){
 
-        dispatch({ type: 'DELETE_TASK', id: task.id})
+        const el = rowRef.current
+
+        // Dispatch immediately so history is correct
+        dispatch({type: 'DELETE_TASK', id: task.id})
+
+        if(el){
+
+            el.style.animation = 'fadeOut 200ms ease forwards'
+
+        }
 
     }
 
@@ -84,7 +101,7 @@ export default function TaskItem({task, depth, readonly = false}){
     const hasChildren = task.children && task.children.length > 0
 
     return (
-        <div data-depth={depth} ref={setNodeRef} style={style}>
+        <div data-depth={depth} ref={combinedRef} style={style}>
             {/* Drag handle */}
             {!readonly && (
                 <button className='drag-handle' {...attributes} {...listeners} aria-label="Drag to reorder">
