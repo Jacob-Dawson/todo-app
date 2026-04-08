@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { arrayMove } from '@dnd-kit/sortable'
 
 function createList(title){
 
@@ -50,7 +51,17 @@ export default function useLists(){
 
     function addList(title){
 
+        if(lists.length >= 20){
+
+            return 'max'
+
+        }
+
+        const trimmed = title.trim() || 'New List'
+        const isDuplicate = lists.some(l => l.title.toLowerCase() === trimmed.toLowerCase())
+        if(isDuplicate) return false
         setLists(prev => [...prev, createList(title)])
+        return true
 
     }
 
@@ -61,10 +72,14 @@ export default function useLists(){
     }
 
     function renameList(id, title){
-
+        
+        const trimmed = title.trim()
+        const isDuplicate = lists.some(l => l.id !== id && l.title.toLowerCase() === trimmed.toLowerCase())
+        if(isDuplicate) return false
         setLists(prev => prev.map(l =>
             l.id === id ? {...l, title: title.trim() || l.title } : l
         ))
+        return true
 
     }
 
@@ -84,6 +99,25 @@ export default function useLists(){
 
     }
 
-    return { lists, addList, deleteList, renameList, updateListTasks, togglePin}
+    function reorderLists(activeId, overId){
+
+        setLists(prev => {
+
+            const activeList = prev.find(l => l.id === activeId)
+            const overList = prev.find(l => l.id === overId)
+
+            // Prevent mixing pinned and unpinned
+            if(activeList.pinned !== overList.pinned) return prev
+
+            const oldIndex = prev.findIndex(l => l.id === activeId)
+            const newIndex = prev.findIndex(l => l.id === overId)
+
+            return arrayMove(prev, oldIndex, newIndex)
+
+        })
+
+    }
+
+    return { lists, addList, deleteList, renameList, updateListTasks, togglePin, reorderLists}
 
 }

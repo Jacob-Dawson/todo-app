@@ -7,7 +7,7 @@ import TaskList from './Tasklist'
 import AddTaskForm from './Addtaskform'
 import { findParentId, findTaskById, findTaskDepth, filterActiveTree, filterCheckedTree, getTaskHeight } from '../utils/taskUtils'
 
-export default function ListContainer({list, onTasksChange, onDelete, onRename, onPin}){
+export default function ListContainer({list, onTasksChange, onDelete, onRename, onPin, dragHandleProps}){
 
     const {tasks, dispatch, canUndo, canRedo} = useTaskReducer(list.tasks, onTasksChange)
     const [editingId, setEditingId] = useState(null)
@@ -123,15 +123,30 @@ export default function ListContainer({list, onTasksChange, onDelete, onRename, 
                 onDragEnd={handleDragEnd}
             >
                 <div className='list-container'>
-                    <div className='list-header'>
+                    <div className='list-header' onClick={() => {setTitleValue(list.title); setEditingTitle(true)}}>
+                        <button
+                            className="list-drag-handle"
+                            {...dragHandleProps}
+                            onClick={e => e.stopPropagation()}
+                            aria-label="Drag to reorder list"
+                        >
+                            ⠿
+                        </button>
                         {editingTitle ? (
                             <input
                                 className='title-edit-input'
                                 value={titleValue}
                                 onChange={e => setTitleValue(e.target.value)}
+                                maxLength={50}
                                 onBlur={() => {
                                     const trimmed = titleValue.trim() || list.title
-                                    onRename(trimmed)
+                                    const success = onRename(trimmed)
+                                    if(success === false){
+
+                                        alert('A list with that name already exists.')
+                                        setTitleValue(list.title)
+
+                                    }
                                     setEditingTitle(false)
                                 }}
                                 onKeyDown={e => {
@@ -163,7 +178,8 @@ export default function ListContainer({list, onTasksChange, onDelete, onRename, 
                         >
                             ❤️
                         </button>
-                        <button className='list-delete-btn' onClick={onDelete} aria-label="Delete list">X</button>
+                        <button className='list-delete-btn' onClick={e => {e.stopPropagation(); 
+                            if(window.confirm(`Delete "${list.title}"? This cannot be undone`))onDelete()}} aria-label="Delete list">X</button>
                     </div>
                     
                     {remainingCount > 0 && (

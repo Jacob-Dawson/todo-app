@@ -33,6 +33,7 @@ const AddTaskForm = forwardRef(function AddTaskForm({ parentId, depth = 0}, ref)
                 onChange={e => setValue(e.target.value)}
                 placeholder={placeholder}
                 aria-label={placeholder}
+                maxLength={200}
             />
             <button type="submit">Add</button>
         </form>
