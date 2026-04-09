@@ -2,7 +2,7 @@
 
 A feature-rich, three-tier task management app built with React. Designed as a portfolio project to demonstrate advanced React patterns, state management, and modern UI/UX practices.
 
-🔗 **[Live Demo](#)** — *(link coming soon)*
+🔗 **[https://jacob-dawson-todo-app.netlify.app/](https://jacob-dawson-todo-app.netlify.app/)**
 
 ---
 
